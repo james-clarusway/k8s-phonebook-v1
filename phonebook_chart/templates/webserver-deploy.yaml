@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: webserver
-        image: IMAGE_TAG_WEB_SERVER
+        image: "{{ .Values.IMAGE_TAG_WEB_SERVER }}"
         env:
         - name: MYSQL_PASSWORD
           valueFrom:
@@ -28,5 +28,3 @@ spec:
             name: servers-cm    
         ports:
         - containerPort: 80
-      imagePullSecrets:
-        - name: regcred

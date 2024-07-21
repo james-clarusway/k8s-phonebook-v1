@@ -37,16 +37,24 @@ pipeline {
           sh "docker push ${ECR_REGISTRY}/${APP_REPO_NAME}:result-b${BUILD_NUMBER}"
         }
       }
-    stage('Integrate Remote k8s with Jenkins') {
+    stage('deploy application') {
       steps {
         withKubeCredentials(
           kubectlCredentials: [
             [caCertificate: '', clusterName: 'cluster-1', contextName: 'kubernetes-admin@kubernetest', credentialsId: 'kube_token', namespace: 'default', serverUrl: 'https://172.31.39.56:6443']
           ]
         ) {
-          sh 'ls'
           sh 'kubectl get nodes'
-          sh 'helm ls'
+          sh '''
+          kubectl delete secret regcred || true
+          kubectl create secret generic regcred \
+            --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json \
+            --type=kubernetes.io/dockerconfigjson
+          export IMAGE_TAG_WEB_SERVER="${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER}"
+          sed -i s/IMAGE_TAG_WEB_SERVER/"${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER}" k8s/webserver-deploy.yaml
+          sed -i s/IMAGE_TAG_RESULT_SERVER/"${ECR_REGISTRY}/${APP_REPO_NAME}:result-b${BUILD_NUMBER}" k8s/resultserverserver-deploy.yaml
+          kubectl apply -f k8s
+          '''
         }
       }
     }
