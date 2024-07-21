@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
         APP_NAME="phonebook"
-        APP_REPO_NAME="clarusway-repo/${APP_NAME}-app-dev"
+        APP_REPO_NAME="clarusway-repo/${APP_NAME}-app"
         AWS_ACCOUNT_ID=sh(script:'aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
         ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
@@ -21,13 +21,14 @@ pipeline {
          '''
         }
       }
-    // stage('Build App Docker Images') {
-    //   steps {
-    //     echo 'Building App Dev Images'
-    //     sh "docker build -t "
-    //     sh 'docker image ls'
-    //     }
-    //   }
+    stage('Build App Docker Images') {
+      steps {
+        echo 'Building App Dev Images'
+        sh "docker build -t ${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER} ${WORKSPACE}/images/image_for_web_server"
+        sh "docker build -t ${ECR_REGISTRY}/${APP_REPO_NAME}:result-b${BUILD_NUMBER} ${WORKSPACE}/images/image_for_result_server"
+        sh 'docker image ls'
+        }
+      }
     stage('Integrate Remote k8s with Jenkins') {
       steps {
         withKubeCredentials(
