@@ -50,10 +50,13 @@ pipeline {
           kubectl create secret generic regcred \
             --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json \
             --type=kubernetes.io/dockerconfigjson
-          sed -i 's|${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER}|' k8s/webserver-deploy.yaml
-          sed -i 's|${ECR_REGISTRY}/${APP_REPO_NAME}:reult-b${BUILD_NUMBER}' k8s/resultserver-deploy.yaml          
+          sed -i "s|IMAGE_TAG_WEB_SERVER|${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER}|" k8s/webserver-deploy.yaml
+          sed -i "s|IMAGE_TAG_RESULT_SERVER|${ECR_REGISTRY}/${APP_REPO_NAME}:reult-b${BUILD_NUMBER}|" k8s/resultserver-deploy.yaml          
           kubectl apply -f k8s
           '''
+
+          sed -i "s|\${ECR_REGISTRY}/\${APP_REPO_NAME}:web-b\${BUILD_NUMBER}|046402772087.dkr.ecr.us-east-1.amazonaws.com/clarusway-repo/phonebook-app:web-b23|" k8s/webserver-deploy.yaml
+
         }
       }
     }
