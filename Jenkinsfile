@@ -29,6 +29,14 @@ pipeline {
         sh 'docker image ls'
         }
       }
+    stage('Push Images to ECR Repo') {
+        steps {
+          echo "Pushing ${APP_NAME} App Images to ECR Repo"
+          sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
+          sh "docker push ${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER}"
+          sh "docker push ${ECR_REGISTRY}/${APP_REPO_NAME}:result-b${BUILD_NUMBER}"
+        }
+      }
     stage('Integrate Remote k8s with Jenkins') {
       steps {
         withKubeCredentials(
