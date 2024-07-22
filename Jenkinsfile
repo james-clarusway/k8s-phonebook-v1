@@ -52,7 +52,7 @@ pipeline {
             --from-file=.dockerconfigjson=/var/lib/jenkins/.docker/config.json \
             --type=kubernetes.io/dockerconfigjson
           sed -i "s|IMAGE_TAG_WEB_SERVER|${ECR_REGISTRY}/${APP_REPO_NAME}:web-b${BUILD_NUMBER}|" k8s/webserver-deploy.yaml
-          sed -i "s|IMAGE_TAG_RESULT_SERVER|${ECR_REGISTRY}/${APP_REPO_NAME}:reult-b${BUILD_NUMBER}|" k8s/resultserver-deploy.yaml          
+          sed -i "s|IMAGE_TAG_RESULT_SERVER|${ECR_REGISTRY}/${APP_REPO_NAME}:result-b${BUILD_NUMBER}|" k8s/resultserver-deploy.yaml          
           kubectl apply -f k8s
           '''
         }
