@@ -42,7 +42,7 @@ pipeline {
       steps {
         withKubeCredentials(
           kubectlCredentials: [
-            [clusterName: 'kube-cluster-1', contextName: 'kubernetes-admin@kubernetest', credentialsId: 'kube_token', namespace: 'default', serverUrl: "CLUSTER_URL"]
+            [clusterName: 'kube-cluster-1', contextName: 'kubernetes-admin@kubernetest', credentialsId: 'kube_token', namespace: 'default', serverUrl: "${CLUSTER_URL}"]
           ]
         ) {
           sh 'kubectl get nodes'
